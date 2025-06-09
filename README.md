@@ -24,6 +24,8 @@ mix phx.new my_app
 mix phx.gen.auth Accounts User users
 ```
 
+and then run the migrations.
+
 ## Config
 
 ### Google cloud setup
