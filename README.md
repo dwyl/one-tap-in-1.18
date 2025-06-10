@@ -17,7 +17,7 @@ We build on top of the existing generated code and use the `UserAuth` module.
 
 The UI is simple: it uses the ready-to-use Google One Tap button that wether re-uses your browser account (if logged-in) or goes through a Google login process.
 
-We introduce two modules: a CSRF check module and a JWT check module against Google's public certs.
+We introduce two modules: a CSRF check module and a JWT check module against Google's public certs and a "bonus" for the CSP rules (and curiously, does it wrong because it demands "unsafe-inline" !!).
 
 
 ## Code generator:
