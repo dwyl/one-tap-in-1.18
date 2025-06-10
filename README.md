@@ -1,6 +1,6 @@
 # Add Google One Tap to the Authentication Generated Code
 
-The latest 1.18 is in RC and `phx.gen.auth` ships with magic links enabled for login and registration (among other goodies).
+The latest 1.8 is in RC and `phx.gen.auth` ships with magic links enabled for login and registration (among other goodies).
 
 Source: <https://www.phoenixframework.org/blog/phoenix-1-8-released>
 
