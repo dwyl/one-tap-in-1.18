@@ -409,4 +409,100 @@ defmodule ExGoogleCerts do
 end
 ```
 
+## Bonus: CSP
 
+In the router, add a `Plig` function:
+
+```elixir
+def put_csp(conn, _) do
+  csp_nonce = csp_nonce()
+  conn
+  |> put_resp_header(
+    "content-security-policy",
+    """
+    default-src 'self' https://accounts.google.com;
+    script-src https://accounts.google.com http://localhost:4000 'nonce-#{csp_nonce}';
+    img-src 'self' data:;
+    style-src 'self' 'unsafe-inline' https://accounts.google.com;
+    frame-ancestors 'self' https://accounts.google.com;
+    """
+    |> String.replace("\n", " ")
+  )
+  |> assign(:csp_nonce, csp_nonce)
+end
+
+defp csp_nonce do
+  nonce = 24
+  |> :crypto.strong_rand_bytes()
+  |> Base.encode64(padding: false)
+
+  Process.put(:nonce, nonce)
+  nonce
+end
+```
+
+and use it in the pipelines `:browser` and `:google_auth`.
+
+> the header `Referrer-Policy: no-referrer-when-downgrade` is demanded by Google.
+
+```elixir
+pipeline :browser do
+  plug :accepts, ["html"]
+  plug :fetch_session
+  plug :fetch_live_flash
+  plug :put_root_layout, html: {LiveFlightWeb.Layouts, :root}
+  plug :put_csp
+  plug :put_secure_browser_headers
+  plug :protect_from_forgery
+  plug :fetch_current_scope_for_user
+end
+
+pipeline :google_auth do
+  plug :put_csp
+  plug :put_secure_browser_headers, %{"referrer-policy" => "no-referrer-when-downgrade"}
+  plug LiveFlightWeb.PlugGoogleAuth
+end
+```
+
+Then, in the "OneTapController" that serves the live "/one-tap" route, add the "csp_nonce" that we saved in the Process registry:
+
+```elixir
+def mount(_,_,socket) do
+  [...]
+  csp_nonce = Process.get(:nonce)
+
+  {:ok,
+    assign(socket,
+      g_cb_uri: callback_uri,
+      g_client_id: google_client_id,
+      csp_nonce: csp_nonce
+  )}
+end
+```
+
+and add the nonce to the script:
+
+```elixir
+def render(assigns) do
+  ~H"""
+  <div id="one-tap-login" phx-update="ignore">
+    <script nonce={@csp_nonce} src="https://accounts.google.com/gsi/client" async>
+    </script>
+  [...]
+end
+```
+
+Since we passed the nonce to the "conn" assigns, we can also pass it to the script that runs the main file "app.js":
+
+In "root.html.heex", we add:
+
+```html
+<script
+  defer
+  phx-track-static
+  type="text/javascript"
+  src={~p"/assets/js/app.js"}
+  type="module"
+  nonce={@csp_nonce}
+>
+```
