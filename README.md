@@ -13,6 +13,12 @@ mix archive.install hex phx_new 1.8.0-rc.3 --force
 
 We want to add the Google One tap login into the authentication funnel.
 
+We build on top of the existing generated code and use the `UserAuth` module. 
+
+The UI is simple: it uses the ready-to-use Google One Tap button that wether re-uses your browser account (if logged-in) or goes through a Google login process.
+
+We introduce two modules: a CSRF check module and a JWT check module against Google's public certs.
+
 
 ## Code generator:
 
