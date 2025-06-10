@@ -411,7 +411,7 @@ end
 
 ## Bonus: CSP
 
-In the router, add a `Plig` function:
+In the router, add a `Plug` function:
 
 ```elixir
 def put_csp(conn, _) do
