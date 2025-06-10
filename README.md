@@ -489,6 +489,7 @@ def render(assigns) do
     <script nonce={@csp_nonce} src="https://accounts.google.com/gsi/client" async>
     </script>
   [...]
+  """
 end
 ```
 
