@@ -11,7 +11,7 @@ The latest Phoenix version has been installed  - at the time of writting - with:
 mix archive.install hex phx_new 1.8.0-rc.3 --force
 ```
 
-We want to add thee Google One tap login into the authentication funnel.
+We want to add the Google One tap login into the authentication funnel.
 
 
 ## Code generator:
@@ -157,7 +157,7 @@ defmodule MyAppWeb.UserLive.OneTap do
     """
   end
 
-  def mount(_params, %{"_csrf_token" => _csrf_token} = _session, socket) do
+  def mount(_params, _session, socket) do
     callback_uri =
       Path.join(
         MyAppWeb.Endpoint.url(),
