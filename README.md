@@ -197,12 +197,10 @@ end
 
 ## CSRF Protection:
 
-When Google One Tap POSTs the credential to your "/google_auth" endpoint, a malicious site could try to forge such a request.
-The plug checks that a CSRF token set in a cookie (by your app) matches the one sent in the POST params.
-This ensures the POST is coming from your own frontend, not a third-party site.
+This checks that the POST to "/google_auth" is coming from the frontend, not from a third-party site.
+For this, it checks that a CSRF token in a cookie (set by the server) matches the one in the POST params.
 
-Google's Recommendation:
-Google recommends verifying the CSRF token for One Tap and Sign-In With Google flows.
+This is a Google's Recommendation.
 
 ```elixir
 # plug_google_auth.ex
@@ -338,24 +336,21 @@ defmodule ExGoogleCerts do
   defp iss, do: "https://accounts.google.com"
   defp app_id, do: System.get_env("GOOGLE_CLIENT_ID")
 
-  #### PEM version ####
+  #### Google recommendation: Oauth/V3 version ####
 
-  defp pem_certs, do: "https://www.googleapis.com/oauth2/v1/certs"
+  defp jwk_certs, do: "https://www.googleapis.com/oauth2/v3/certs"
 
-  defp check_identity_v1(jwt) do
+  def check_identity_v3(jwt) do
     with {:ok, %{"kid" => kid, "alg" => alg}} <- Joken.peek_header(jwt),
-         {:ok, body} <- fetch(pem_certs()) do
-      {true, %{fields: fields}, _} =
-        body
-        |> Map.get(kid)
-        |> JOSE.JWK.from_pem()
-        |> JOSE.JWT.verify_strict([alg], jwt)
-
-      {:ok, fields}
+         {:ok, %{"keys" => certs}} <- fetch(jwk_certs()) do
+      cert = Enum.find(certs, fn cert -> cert["kid"] == kid end)
+      signer = Joken.Signer.create(alg, cert)
+      Joken.verify(jwt, signer, [])
     else
       {:error, reason} -> {:error, inspect(reason)}
     end
   end
+
 
 
   # default HTTP client: Req (parses the body as JSON)
