@@ -208,7 +208,12 @@ defmodule MyAppWeb.UserLive.OneTap do
 end
 ```
 
-Add a pipeline for a POST route that goes through a custom `Plug`. It will receive the JWT sent by Google.
+Add a pipeline for a POST route that goes through a custom `Plug`. It will receive the JWT sent by Google and a CSRF token.
+
+We will verify both:
+
+- the received CSRF against the one saved in the session (to check that it is our own frontend that targets the POST endpoint)
+- the JWT against Google's public certs and some other checks to eventually get the associated profile.
 
 ```elixir
 # router.ex
