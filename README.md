@@ -42,6 +42,8 @@ LiveView documentation: <https://hexdocs.pm/phoenix_live_view/form-bindings.html
 
 The "action" attribute will execute the HTTP request served at the URI "/users/log-in" which is `:create`.
 
+This is (of course) already implemented in the code generated. All we have to do is plug into it.
+
 ## Code generator:
 
 Use the Phoenix code generator:
