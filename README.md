@@ -17,8 +17,30 @@ We build on top of the existing generated code and use the `UserAuth` module.
 
 The UI is simple: it uses the ready-to-use Google One Tap button that wether re-uses your browser account (if logged-in) or goes through a Google login process.
 
-We introduce two modules: a CSRF check module and a JWT check module against Google's public certs and a "bonus" for the CSP rules (and curiously, Google does it wrong because they inject <style> elements that demands "unsafe-inline" !!).
+We introduce two modules: a CSRF check module and a JWT check module against Google's public certs and a "bonus" for the CSP rules (curiously, Google does it wrong because they inject <style> elements that demands "unsafe-inline" !!).
 
+
+## Preliminary: Triggering a Phoenix controller action from a form in a LiveView
+
+This blog <https://fly.io/phoenix-files/phx-gen-auth/> explains how to _set a cookie from a LiveView form_. 
+With more details: <https://fly.io/phoenix-files/phx-trigger-action/>
+
+> The LiveView lifecycle starts as an HTTP request, but then a WebSocket connection is established with the server, and all communication between your LiveView and the server takes place over that connection.
+> Why is this important? Because session data is stored in cookies, and cookies are only exchanged during an HTTP request/response. So writing data in session can’t be done directly from a LiveView"
+
+LiveView documentation: <https://hexdocs.pm/phoenix_live_view/form-bindings.html#submitting-the-form-action-over-http>
+
+```elixir
+<.form
+  :let={f}
+  for={@form}
+  id="login_form_magic"
+  action={~p"/users/log-in"}
+  phx-submit="submit_magic"
+>
+```
+
+The "action" attribute will execute the HTTP request served at the URI "/users/log-in" which is `:create`.
 
 ## Code generator:
 
