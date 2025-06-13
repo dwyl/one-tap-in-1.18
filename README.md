@@ -467,8 +467,6 @@ end
 
 and use it in the pipelines `:browser` and `:google_auth`.
 
-> the header `Referrer-Policy: no-referrer-when-downgrade` is demanded by Google.
-
 ```elixir
 pipeline :browser do
   plug :accepts, ["html"]
