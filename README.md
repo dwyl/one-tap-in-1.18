@@ -488,6 +488,9 @@ pipeline :google_auth do
 end
 ```
 
+> [ 💡 Google Key Point]: "When testing using http and localhost set the Referrer-Policy header in your web app to `Referrer-Policy: no-referrer-when-downgrade`."
+> Phoenix default are for `content-security-policy`:  - it sets frame-ancestors and base-uri to self, restricting embedding and the use of <base> element to same origin respectively. It is equivalent to setting "base-uri 'self'; frame-ancestors 'self';". For `referrer-policy` - only send origin on cross origin requests.
+
 Then, in the "OneTapController" that serves the live "/one-tap" route, add the "csp_nonce" that we saved in the Process registry:
 
 ```elixir
