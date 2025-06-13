@@ -488,6 +488,7 @@ end
 
 > [ 💡 Google Key Point]: "When testing using http and localhost set the Referrer-Policy header in your web app to `Referrer-Policy: no-referrer-when-downgrade`."
 > Phoenix default are for `content-security-policy`:  - it sets frame-ancestors and base-uri to self, restricting embedding and the use of <base> element to same origin respectively. It is equivalent to setting "base-uri 'self'; frame-ancestors 'self';". For `referrer-policy` - only send origin on cross origin requests.
+> [Phoenix put_secure_browser_headers](https://hexdocs.pm/phoenix/1.8.0-rc.3/Phoenix.Controller.html#put_secure_browser_headers/2)
 
 Then, in the "OneTapController" that serves the live "/one-tap" route, add the "csp_nonce" that we saved in the Process registry:
 
